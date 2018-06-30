@@ -1,0 +1,30 @@
+{
+    "name": "ekyna/colissimo",
+    "description": "PHP component for Colissimo shipment",
+    "type": "component",
+    "authors": [
+        {
+            "name": "Etienne Dauvergne",
+            "homepage": "http://ekyna.com"
+        }
+    ],
+    "keywords": [
+        "php",
+        "colissimo",
+        "shipment",
+        "web service"
+    ],
+    "homepage": "https://github.com/ekyna/Colissimo",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~5.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ekyna\\Component\\Colissimo\\": "src/"
+        }
+    }
+}
