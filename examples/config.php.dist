@@ -1,0 +1,15 @@
+<?php
+
+// TODO Fill with your credentials
+
+$cache = false;
+$debug = true;
+
+$contractNumber = '';
+$password = '';
+
+$outputDir = __DIR__ . DIRECTORY_SEPARATOR . 'output';
+
+if (!is_dir($outputDir)) {
+    mkdir($outputDir);
+}

@@ -1,5 +1,4 @@
-/.idea
-/bin
 /vendor
 /composer.lock
-/composer.phar
+/examples/config.php
+/examples/output/
