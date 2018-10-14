@@ -5,7 +5,6 @@ namespace Ekyna\Component\Colissimo\Withdrawal;
 
 use Ekyna\Component\Colissimo\Base\Exception\ClientException;
 use Ekyna\Component\Colissimo\Base\Request\RequestInterface;
-use Ekyna\Component\Colissimo\Base\Response\ResponseInterface;
 
 /**
  * Class Client
@@ -51,11 +50,11 @@ class Client extends \SoapClient
      * @param string           $method
      * @param RequestInterface $request
      *
-     * @return ResponseInterface
+     * @return mixed
      *
      * @throws ClientException
      */
-    public function call(string $method, RequestInterface $request): ResponseInterface
+    public function call(string $method, RequestInterface $request)
     {
         try {
             $parameters = $request->toArray();

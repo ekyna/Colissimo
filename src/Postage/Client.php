@@ -78,7 +78,7 @@ class Client extends \GuzzleHttp\Client
      *
      * @throws ClientException
      */
-    public function call(string $method, RequestInterface $request, $responseClass): ResponseInterface
+    public function call(string $method, RequestInterface $request, $responseClass)
     {
         $serializer = $this->getSerializer();
 

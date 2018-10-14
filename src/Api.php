@@ -3,7 +3,6 @@ declare (strict_types=1);
 
 namespace Ekyna\Component\Colissimo;
 
-use Ekyna\Component\Colissimo\Base\ClientInterface;
 use Ekyna\Component\Colissimo\Base\Exception\RuntimeException;
 use Ekyna\Component\Colissimo\Base\Method\MethodInterface;
 use Ekyna\Component\Colissimo\Base\Request\CredentialRequestInterface;
@@ -32,17 +31,18 @@ class Api
     private $config;
 
     /**
-     * @var ClientInterface[]
+     * @var ClientFactoryInterface
      */
-    private $clients;
+    private $factory;
 
 
     /**
      * Constructor.
      *
-     * @param array $config
+     * @param array                  $config
+     * @param ClientFactoryInterface $factory
      */
-    public function __construct(array $config)
+    public function __construct(array $config, ClientFactoryInterface $factory = null)
     {
         $this->config = array_replace([
             'login'    => null,
@@ -51,7 +51,7 @@ class Api
             'debug'    => false,
         ], $config);
 
-        $this->clients = [];
+        $this->factory = $factory ?: new ClientFactory($this->config['cache'], $this->config['debug']);
     }
 
     /**
@@ -100,22 +100,6 @@ class Api
             throw new RuntimeException("Method {$name} does not exist");
         }
 
-        return new $methodClass($this->getClient($clientClass));
-    }
-
-    /**
-     * Returns the client.
-     *
-     * @param string $class
-     *
-     * @return \stdClass
-     */
-    private function getClient($class)
-    {
-        if (isset($this->clients[$class])) {
-            return $this->clients[$class];
-        }
-
-        return $this->clients[$class] = new $class($this->config['cache'], $this->config['debug']);
+        return new $methodClass($this->factory->getClient($clientClass));
     }
 }
