@@ -25,6 +25,7 @@ use Ekyna\Component\Colissimo\Base;
  * @property string $doorCode1
  * @property string $doorCode2
  * @property string $email
+ * @property string $intercom
  * @property string $language
  */
 class Address extends Base\Model\AbstractModel
@@ -50,6 +51,7 @@ class Address extends Base\Model\AbstractModel
             ->addField(new Base\Definition\AlphaNumeric('doorCode1', false, 8))
             ->addField(new Base\Definition\AlphaNumeric('doorCode2', false, 8))
             ->addField(new Base\Definition\AlphaNumeric('email', false, 80))
+            ->addField(new Base\Definition\AlphaNumeric('intercom', false, 30))
             ->addField(new Base\Definition\AlphaNumeric('language', false, 2));
     }
 }
