@@ -22,7 +22,7 @@ $api = new Api([
 
 $request = new Postage\Request\GenerateLabelRequest();
 
-$request->outputFormat->outputPrintingType = Postage\Enum\OutputPrintingType::PDF_10x15_300dpi;
+$request->outputFormat->outputPrintingType = Postage\Enum\OutputPrintingType::ZPL_10x15_300dpi;
 
 $request->letter->service->productCode = Postage\Enum\ProductCode::DOM;
 $request->letter->service->depositDate = new \DateTime('now');
@@ -58,9 +58,9 @@ if (!$response->isSuccess()) {
 
 echo <<<EOT
 Data:
-Parcel number: {$response->labelV2Response->parcelNumber}
-Parcel number partner: {$response->labelV2Response->parcelNumberPartner}
-Pdf Url: {$response->labelV2Response->pdfUrl}
+- Parcel number: {$response->labelV2Response->parcelNumber}
+- Parcel number partner: {$response->labelV2Response->parcelNumberPartner}
+- Pdf Url: {$response->labelV2Response->pdfUrl}
 
 EOT;
 

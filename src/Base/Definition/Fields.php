@@ -42,8 +42,10 @@ class Fields extends ArrayOfModel
     public function denormalize($data, $class, $format = null, array $context = [])
     {
         $denormalized = [];
-        foreach ($data as $key => $value) {
-            $denormalized[] = new Field($key, $value);
+        if (isset($data['field']) && !empty($data['field'])) {
+            foreach ($data['field'] as $field) {
+                $denormalized[] = new Field($field['key'], $field['value']);
+            }
         }
 
         return $denormalized;

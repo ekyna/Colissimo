@@ -6,7 +6,7 @@ namespace Ekyna\Component\Colissimo\Postage\Enum;
 use Ekyna\Component\Colissimo\Base\Enum\AbstractEnum;
 
 /**
- * Class RreturnTypeChoice
+ * Class ReturnTypeChoice
  * @package Ekyna\Component\Colissimo\Enum
  * @author  Etienne Dauvergne <contact@ekyna.com>
  */

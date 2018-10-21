@@ -91,31 +91,12 @@ class Client extends \GuzzleHttp\Client
                 'json' => $req,
             ]);
 
-            $parts = $this->parseResponse($res->getBody()->getContents());
-
-            /** @var ResponseInterface $response */
-            $response = null;
-            foreach ($parts as $part) {
-                if ($part['headers']['Content-ID'] === '<jsonInfos>') {
-                    $response = $this->serializer->deserialize($part['body'], $responseClass, 'json');
-                } elseif ($response) {
-                    $response->addAttachment(
-                        new Attachment(trim($part['headers']['Content-ID'], '<>'), $part['body'])
-                    );
-                }
-            }
-
-            return $response->setSuccess(true);
+            return $this
+                ->parseResponse($res->getBody()->getContents(), $responseClass)
+                ->setSuccess(true);
         } catch (\GuzzleHttp\Exception\ClientException $exception) {
-            $response = new $responseClass;
             if (null !== $res = $exception->getResponse()) {
-                $data = json_decode($res->getBody()->getContents(), true);
-                if (isset($data['messages']) && !empty($data['messages'])) {
-                    foreach ($data['messages'] as $m) {
-                        $response->addMessage(new Message(intval($m['id']), $m['type'], $m['messageContent']));
-                    }
-                }
-                return $response;
+                return $this->parseResponse($res->getBody()->getContents(), $responseClass);
             }
 
             throw $exception;
@@ -137,13 +118,14 @@ class Client extends \GuzzleHttp\Client
      * Parses the response.
      *
      * @param string $response
+     * @param string $class
      *
-     * @return array
+     * @return ResponseInterface
      */
-    private function parseResponse(string $response)
+    private function parseResponse(string $response, string $class): ResponseInterface
     {
         if (0 === preg_match_all('~--uuid:[a-zA-Z0-9-]+~', $response, $matches, PREG_OFFSET_CAPTURE)) {
-            return [[
+            $responses = [[
                 'headers' => [
                     'Content-Type'              => 'application/json;charset=UTF-8',
                     'Content-Transfer-Encoding' => 'binary',
@@ -151,34 +133,51 @@ class Client extends \GuzzleHttp\Client
                 ],
                 'body'    => $response,
             ]];
-        }
+        } else {
+            $uuids = $matches[0];
 
-        $uuids = $matches[0];
+            $parts = [];
 
-        $parts = [];
-
-        for ($i = 0; $i < count($uuids) - 1; $i++) {
-            $start = $uuids[$i][1] + strlen($uuids[$i][0]) + 2;
-            $parts[] = substr($response, $start, $uuids[$i + 1][1] - $start);
-        }
-
-        $responses = [];
-
-        foreach ($parts as $part) {
-            list($header, $body) = explode("\r\n\r\n", $part);
-
-            $headers = [];
-            foreach (explode("\r\n", $header) as $line) {
-                list($key, $value) = explode(':', $line);
-                $headers[trim($key)] = trim($value);
+            for ($i = 0; $i < count($uuids) - 1; $i++) {
+                $start = $uuids[$i][1] + strlen($uuids[$i][0]) + 2;
+                $parts[] = substr($response, $start, $uuids[$i + 1][1] - $start);
             }
 
-            $responses[] = [
-                'headers' => $headers,
-                'body'    => $body,
-            ];
+            $responses = [];
+
+            foreach ($parts as $part) {
+                list($header, $body) = explode("\r\n\r\n", $part);
+
+                $headers = [];
+                foreach (explode("\r\n", $header) as $line) {
+                    list($key, $value) = explode(':', $line);
+                    $headers[trim($key)] = trim($value);
+                }
+
+                $responses[] = [
+                    'headers' => $headers,
+                    'body'    => $body,
+                ];
+            }
         }
 
-        return $responses;
+        /** @var ResponseInterface $response */
+        $response = null;
+        foreach ($responses as $part) {
+            if ($part['headers']['Content-ID'] === '<jsonInfos>') {
+                $response = $this->serializer->deserialize($part['body'], $class, 'json');
+                if (isset($part['body']['messages']) && !empty($part['body']['messages'])) {
+                    foreach ($part['body']['messages'] as $m) {
+                        $response->addMessage(new Message(intval($m['id']), $m['type'], $m['messageContent']));
+                    }
+                }
+            } elseif ($response) {
+                $response->addAttachment(
+                    new Attachment(trim($part['headers']['Content-ID'], '<>'), $part['body'])
+                );
+            }
+        }
+
+        return $response;
     }
 }
