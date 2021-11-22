@@ -35,7 +35,7 @@ class Numeric extends AbstractField
      */
     public function validate($value, string $prefix = null): void
     {
-        if (empty($value)) {
+        if (is_null($value)) {
             if ($this->required) {
                 $this->throwValidationException("Value is required", $prefix);
             }

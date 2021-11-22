@@ -40,8 +40,8 @@ class Client extends \GuzzleHttp\Client
     /**
      * Constructor.
      *
-     * @param bool   $cache
-     * @param bool   $debug
+     * @param bool $cache
+     * @param bool $debug
      */
     public function __construct(bool $cache = false, bool $debug = false)
     {
@@ -49,7 +49,14 @@ class Client extends \GuzzleHttp\Client
         $this->debug = $debug;
 
         parent::__construct([
-            'base_uri' => static::ENDPOINT,
+            'base_uri'       => static::ENDPOINT,
+            'stream_context' => [
+                'ssl' => [
+                    'verify_peer'       => false,
+                    'verify_peer_name'  => false,
+                    'allow_self_signed' => true,
+                ],
+            ],
         ]);
     }
 
@@ -94,7 +101,7 @@ class Client extends \GuzzleHttp\Client
             return $this
                 ->parseResponse($res->getBody()->getContents(), $responseClass)
                 ->setSuccess(true);
-        } catch (\GuzzleHttp\Exception\ClientException $exception) {
+        } catch (\GuzzleHttp\Exception\RequestException $exception) {
             if (null !== $res = $exception->getResponse()) {
                 return $this->parseResponse($res->getBody()->getContents(), $responseClass);
             }

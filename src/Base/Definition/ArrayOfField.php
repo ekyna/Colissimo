@@ -40,7 +40,7 @@ class ArrayOfField extends AbstractField implements SerializerAwareInterface
     /**
      * Returns the field.
      *
-     * @return string
+     * @return FieldInterface
      */
     public function getField()
     {

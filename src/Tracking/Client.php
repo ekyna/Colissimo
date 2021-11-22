@@ -42,6 +42,13 @@ class Client extends \SoapClient
             'trace'        => $debug ? 1 : 0,
             'soap_version' => SOAP_1_1,
             'compression'  => true,
+            'stream_context' => [
+                'ssl' => [
+                    'verify_peer'       => false,
+                    'verify_peer_name'  => false,
+                    'allow_self_signed' => true,
+                ],
+            ],
         ]);
     }
 

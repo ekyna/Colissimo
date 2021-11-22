@@ -87,6 +87,10 @@ class Api
     {
         $methodClass = $clientClass = null;
 
+        if ($name === 'checkGenerateLabel') {
+            $name = 'generateLabel';
+        }
+
         foreach (['Postage', 'Tracking', 'Withdrawal'] as $ns) {
             $class = 'Ekyna\\Component\\Colissimo\\' . $ns . '\\Method\\' . ucwords($name) . 'Method';
             if (class_exists($class)) {
